@@ -42,6 +42,7 @@ def getBulaIDs(medicineName, pagina=1):
     }
     for attempt in range(3):
         try:
+            # Log de tentativa
             print(f"Tentativa {attempt + 1} de 3")
             response = requests.get(url, headers=headers, params=querystring, timeout=20)
             print("Status code da API:", response.status_code)
@@ -69,7 +70,6 @@ def getBulaIDs(medicineName, pagina=1):
 def getBula(medicineName):
     try:
         ids = getBulaIDs(medicineName)
-        print("IDs:", ids)
         if not ids:
             print("Nenhum remédio reconhecido")
             return None

@@ -25,7 +25,7 @@ def sqsProcess_handler(event, context):
             my_number = data['my_number']
             guest_number = data['guest_number']
             
-            
+            # Log no CloudWatch
             print(f"Processando mensagem para {guest_number}")
             
             # Invoca o backend para processar a imagem
@@ -35,11 +35,9 @@ def sqsProcess_handler(event, context):
                 payload_content = message_response['Payload']
                 
                 try:
-                    # Converta o StreamingBody para string
+                    # Converte o StreamingBody para string
                     payload_content_str = payload_content.read().decode('utf-8')
                     payload_content_json = json.loads(payload_content_str)
-
-                    print(f"Mensagem processada. Resposta do backend: {payload_content_json}")
                     
                     payload_content_body = payload_content_json['body']
                     
@@ -73,7 +71,6 @@ def sqsProcess_handler(event, context):
                 QueueUrl=queue_url,
                 ReceiptHandle=record['receiptHandle']
             )
-            print("Mensagem apagada da fila SQS.")
             return response
         
             

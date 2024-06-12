@@ -9,7 +9,6 @@ import os
 
 def backend_handler(event, context):
     
-    print("Iniciando Lambda de Lex Handler")
     account_sid = os.environ['TWILIO_ACCOUNT_SID']
     auth_token = os.environ['TWILIO_AUTH_TOKEN']
     
@@ -19,17 +18,10 @@ def backend_handler(event, context):
     payload = event.get('payload')
     data = event.get('data')
     
-    print("Payload: ", payload)
-    print("Data: ", data)
-    
     funcionality = data.get('functionality')
     s3_key = payload.get('s3_key')
     guest_number = data.get('guest_number')
     my_number = data.get('my_number')
-    
-    print(f"Funcionality: {funcionality}")
-    print(f"S3 Key: {s3_key}")
-    print(f"Guest Number: {guest_number}")
     
     if funcionality == 'remedio':
         try:
@@ -51,8 +43,6 @@ def backend_handler(event, context):
                 presigned_url = s3_client.generate_presigned_url('get_object',
                     Params={'Bucket': os.environ['S3_BUCKET_NAME'], 'Key': pdf_key},
                     ExpiresIn=360)  # URL válida por 6 minutos
-                print("pdf_key: ",pdf_key)
-                print("presigned_url", presigned_url)
 
                 message = twilio_client.messages.create(
                 media_url=[presigned_url], # URL do PDF

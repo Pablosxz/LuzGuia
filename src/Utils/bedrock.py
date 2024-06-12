@@ -29,7 +29,6 @@ def getMedicineName(text):
         if not text:
             return None
         modelId = 'amazon.titan-text-express-v1'
-        print("Text from Rekognition: ",text)
         
         prompt = f"""{text}
             Com base nos dados acima, busque o nome do remédio, me diga apenas o nome do remédio, mais nada, nada como 'o nome do remédio é...',
@@ -53,8 +52,6 @@ def getMedicineName(text):
         
         # Remove caracteres especiais
         res = re.sub(r'[^\w\s]', '', res)
-        
-        print(f"Nome do remédio: {res}")
 
         if "None" in res or "Digite" in res or "Citalopram" in res:
             return None

@@ -26,6 +26,7 @@ def invokeBackend(data, payload):
         })
     )
     
+    # Log no CloudWatch
     print(f"Resposta da Lambda do backend: {lambda_response}")
     
     return lambda_response

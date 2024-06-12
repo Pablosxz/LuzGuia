@@ -92,7 +92,6 @@ def preProcess_handler(event, context):
             data['functionality'] = get_last_message_sent_to_user(data)
             
             if data['functionality'] in ['remedio', 'documento']:
-                print(f"Funcionality: {data['functionality']}")
                 
                 # Salva a imagem no bucket e retorna suas informações
                 payload = imagePrincipal(data)
@@ -106,6 +105,7 @@ def preProcess_handler(event, context):
                 # Envia a mensagem para a fila do SQS
                 send_message_to_sqs(message_infos)
                 
+                # Log no CloudWatch
                 print("Mensagem enviada para a fila do SQS.")
                 
                 return {

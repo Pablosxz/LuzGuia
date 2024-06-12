@@ -51,12 +51,3 @@ def detect_labels_s3(bucket, photo):
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return []
-
-
-def lambda_handler(event, context):
-    load_dotenv()
-    bucket = os.getenv("S3_BUCKET_NAME")
-    photo = 'download.jpg'
-    labels = detect_labels_s3(bucket, photo)
-    for label in labels:
-        print(f"Label: {label['Name']}, Confidence: {label['Confidence']:.2f}%")

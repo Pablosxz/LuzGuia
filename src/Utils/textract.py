@@ -45,7 +45,6 @@ def extractTextFromPdf(fileName):
     )
 
     job_id = response['JobId']
-    print(f"Started job with id: {job_id}")
 
     # Espera o textract terminar a extração de texto
     while True:
@@ -86,7 +85,6 @@ def extractTextFromImage(fileName):
         if not bucketName:
             raise ValueError("S3_BUCKET_NAME is not set in the environment variables")
 
-        print(f"Processing file: {fileName} in bucket: {bucketName}")
         # Chama o Textract para detectar o texto no documento
         response = textract.detect_document_text(
             Document={
