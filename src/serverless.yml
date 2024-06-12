@@ -1,0 +1,119 @@
+service: AcessibilityService
+frameworkVersion: "4"
+
+plugins:
+  - serverless-offline
+  - serverless-python-requirements
+  - serverless-dotenv-plugin
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        # Amazon Lex
+        - lex:RecognizeText
+        - lex:StartConversation
+        - lex:DeleteSession
+        - lex:ListSessions
+        - lex:GetSession
+        
+        # Amazon Rekognition
+        - rekognition:DetectLabels
+        - rekognition:DetectFaces
+        - rekognition:DetectText
+        
+        # Amazon Polly
+        - polly:SynthesizeSpeech
+        
+        # AWS Lambda
+        - lambda:InvokeFunction
+        - lambda:GetFunction
+        - lambda:ListFunctions
+        
+        # Amazon Textract
+        - textract:DetectDocumentText
+        - textract:AnalyzeDocument
+        - textract:StartDocumentTextDetection
+        - textract:GetDocumentTextDetection
+        
+        # Amazon Bedrock permissions
+        - bedrock:InvokeModel
+        - bedrock:ListModels
+        
+        # Amazon S3 permissions
+        - s3:ListBucket
+        - s3:GetObject
+        - s3:PutObject
+        - s3:DeleteObject
+      
+        # Amazon SQS
+        - sqs:SendMessage
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueAttributes
+        - sqs:GetQueueUrl
+      Resource: "*"
+
+functions:
+  preProcess:
+    handler: handler.preProcessHandler
+    description: "Função que realiza o pré-processamento das mensagens recebidas"
+    events:
+      - httpApi:
+          path: /preProcess
+          method: post
+    timeout: 20
+
+  backendHandler:
+    handler: handler.backendHandler
+    description: "Função que realiza a integração e utilização dos serviços."
+    events:
+      - httpApi:
+          path: /backend
+          method: get
+    timeout: 100
+  
+  sqsProcessHandler:
+    handler: handler.sqsProcessHandler
+    description: "Função que realiza o processamento de mensagens na fila SQS"
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - MyQueue
+              - Arn
+          batchSize: 1
+    timeout: 100
+          
+
+resources:
+  Resources:
+    MyQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "luz-guia"
+        VisibilityTimeout: 100
+    MyS3Bucket:
+      Type: 'AWS::S3::Bucket'
+      Properties:
+        BucketName: ${env:S3_BUCKET_NAME}
+        AccessControl: Private
+        # Ciclo de vida para expirar objetos após 30 dias
+        LifecycleConfiguration:
+          Rules:
+            - Id: "ExpireImages"
+              Prefix: "Images/"
+              Status: Enabled
+              ExpirationInDays: 30
+            - Id: "ExpireAudios"
+              Prefix: "Audios/"
+              Status: Enabled
+              ExpirationInDays: 30
+
+package:
+  exclude:
+    - node_modules/**
+    - venv/**
